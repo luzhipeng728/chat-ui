@@ -7,9 +7,12 @@
 
 echo "🔧 修复 MongoDB 锁文件问题..."
 
-# 停止所有服务
-echo "1. 停止 PM2 服务..."
-pm2 delete all 2>/dev/null || true
+# 停止chat-ui相关服务
+echo "1. 停止 chat-ui 服务..."
+pm2 stop ynet-proxy 2>/dev/null || true
+pm2 stop ynet-frontend 2>/dev/null || true
+pm2 delete ynet-proxy 2>/dev/null || true
+pm2 delete ynet-frontend 2>/dev/null || true
 
 # 清理锁文件
 echo "2. 清理锁文件..."
