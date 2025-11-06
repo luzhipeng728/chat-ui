@@ -109,40 +109,93 @@ fi
 
 log_success "环境配置检查完成"
 
-# 6. 构建前端项目
-log_info "构建前端项目..."
-npm run build
-log_success "前端构建完成"
-
-# 7. 停止旧的服务(如果存在)
+# 6. 停止旧的服务(如果存在)
 log_info "停止旧的服务..."
 pm2 delete ynet-proxy 2>/dev/null || true
 pm2 delete ynet-frontend 2>/dev/null || true
 log_success "旧服务已停止"
 
-# 8. 启动后端代理服务 (仅监听 localhost)
+# 7. 临时启动后端代理服务用于构建
+log_info "临时启动后端代理服务用于构建..."
+# 加载环境变量
+export $(grep -v '^#' .env.local | xargs)
+# 后台启动
+node doubao-proxy.cjs > logs/proxy-build.log 2>&1 &
+PROXY_PID=$!
+log_success "后端代理服务已临时启动 (PID: $PROXY_PID)"
+
+# 等待服务启动
+sleep 2
+
+# 8. 构建前端项目
+log_info "构建前端项目..."
+npm run build
+BUILD_STATUS=$?
+
+# 停止临时的后端代理
+kill $PROXY_PID 2>/dev/null || true
+sleep 1
+
+if [ $BUILD_STATUS -ne 0 ]; then
+    log_error "前端构建失败"
+    exit 1
+fi
+log_success "前端构建完成"
+
+# 9. 启动后端代理服务 (仅监听 localhost)
 log_info "启动后端代理服务 (端口: 8090)..."
-pm2 start doubao-proxy.cjs --name ynet-proxy \
-    --log logs/proxy.log \
-    --error logs/proxy-error.log \
-    --env-file .env.local \
-    --time
-log_success "后端代理服务已启动"
 
-# 9. 启动前端服务 (对外开放)
-log_info "启动前端服务 (端口: 3000)..."
+# 创建 PM2 生态系统配置文件
+cat > ecosystem.config.cjs <<EOF
+module.exports = {
+  apps: [
+    {
+      name: 'ynet-proxy',
+      script: './doubao-proxy.cjs',
+      env: {
+        NODE_ENV: 'production',
+        UPSTREAM_API_KEY: '$(grep UPSTREAM_API_KEY .env.local | cut -d= -f2)',
+        UPSTREAM_BASE_URL: '$(grep UPSTREAM_BASE_URL .env.local | cut -d= -f2)',
+        PROXY_PORT: '$(grep PROXY_PORT .env.local | cut -d= -f2 || echo 8090)'
+      },
+      log_file: './logs/proxy.log',
+      error_file: './logs/proxy-error.log',
+      out_file: './logs/proxy-out.log',
+      time: true
+    },
+    {
+      name: 'ynet-frontend',
+      script: './run-frontend.cjs',
+      env: {
+        NODE_ENV: 'production',
+        ORIGIN: 'http://localhost:3000',
+        HOST: '0.0.0.0',
+        PORT: '3000',
+        OPENAI_BASE_URL: 'http://127.0.0.1:8090',
+        OPENAI_API_KEY: 'yichengrongzhi-internal',
+        MONGODB_URL: '',
+        MONGODB_DB_NAME: 'chat-ui',
+        MONGODB_DIRECT_CONNECTION: 'false',
+        MONGO_STORAGE_PATH: './db',
+        PUBLIC_APP_NAME: '易诚融智',
+        PUBLIC_APP_ASSETS: 'chatui',
+        PUBLIC_APP_DESCRIPTION: "Making the community's best AI chat models available to everyone.",
+        COOKIE_NAME: 'hf-chat',
+        COUPLE_SESSION_WITH_COOKIE_NAME: '',
+        COOKIE_SAMESITE: 'lax',
+        COOKIE_SECURE: 'false'
+      },
+      log_file: './logs/frontend.log',
+      error_file: './logs/frontend-error.log',
+      out_file: './logs/frontend-out.log',
+      time: true
+    }
+  ]
+};
+EOF
 
-# 设置环境变量让前端使用内网地址访问后端
-export ORIGIN=http://localhost:3000
-export HOST=0.0.0.0
-export PORT=3000
-
-pm2 start npm --name ynet-frontend \
-    --log logs/frontend.log \
-    --error logs/frontend-error.log \
-    --time \
-    -- run start
-log_success "前端服务已启动"
+pm2 start ecosystem.config.cjs
+log_success "前后端服务已启动"
 
 # 10. 保存 PM2 进程列表
 log_info "保存 PM2 进程列表..."

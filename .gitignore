@@ -6,6 +6,7 @@ node_modules
 .env
 .env.local
 .env.development
+ecosystem.config.cjs
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 SECRET_CONFIG
