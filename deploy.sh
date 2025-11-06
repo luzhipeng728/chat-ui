@@ -115,6 +115,12 @@ pm2 delete ynet-proxy 2>/dev/null || true
 pm2 delete ynet-frontend 2>/dev/null || true
 log_success "旧服务已停止"
 
+# 清理MongoDB锁文件
+log_info "清理MongoDB锁文件..."
+rm -f db/mongod.lock
+rm -f db/*.lock 2>/dev/null || true
+log_success "锁文件已清理"
+
 # 7. 临时启动后端代理服务用于构建
 log_info "临时启动后端代理服务用于构建..."
 # 加载环境变量
