@@ -36,7 +36,7 @@
 	<div class="my-2 min-w-0 flex-1 truncate first-letter:uppercase">
 		<span>
 			{#if confirmDelete}
-				<span class="mr-1 font-semibold"> Delete? </span>
+				<span class="mr-1 font-semibold"> 删除? </span>
 			{/if}
 			{conv.title}
 		</span>

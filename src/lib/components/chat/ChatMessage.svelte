@@ -225,7 +225,7 @@
 					/>
 					<button
 						class="btn rounded-sm p-1 text-xs text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
-						title="Retry"
+						title="重试"
 						type="button"
 						onclick={() => {
 							onretry?.({ id: message.id });
@@ -301,7 +301,7 @@
 								"
 								disabled={loading}
 							>
-								Send
+								发送
 							</button>
 							<button
 								type="button"
@@ -310,7 +310,7 @@
 									editMsdgId = null;
 								}}
 							>
-								Cancel
+								取消
 							</button>
 						</div>
 					</form>
@@ -328,7 +328,7 @@
 				{#if (alternatives.length > 1 && editMsdgId === null) || (!loading && !editMode)}
 					<button
 						class="hidden cursor-pointer items-center gap-1 rounded-md border border-gray-200 px-1.5 py-0.5 text-xs text-gray-400 group-hover:flex hover:flex hover:text-gray-500 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-300 lg:-right-2"
-						title="Edit"
+						title="编辑"
 						type="button"
 						onclick={() => {
 							if (requireAuthUser()) return;
@@ -336,7 +336,7 @@
 						}}
 					>
 						<CarbonPen />
-						Edit
+						编辑
 					</button>
 				{/if}
 			</div>

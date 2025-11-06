@@ -71,7 +71,7 @@
 
 <button
 	class={classNames}
-	title={"Copy to clipboard"}
+	title={"复制到剪贴板"}
 	type="button"
 	onclick={() => {
 		onClick?.();

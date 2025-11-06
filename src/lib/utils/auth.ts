@@ -1,18 +1,10 @@
-import { goto } from "$app/navigation";
-import { base } from "$app/paths";
 import { page } from "$app/state";
 
 /**
- * Redirects to the login page if the user is not authenticated
- * and the login feature is enabled.
+ * 检查用户是否已登录
+ * @returns true表示需要登录(未登录), false表示已登录
  */
 export function requireAuthUser(): boolean {
-	if (page.data.loginEnabled && !page.data.user) {
-		const url = page.data.shared
-			? `${base}/login?next=${encodeURIComponent(page.url.pathname + page.url.search)}`
-			: `${base}/login`;
-		goto(url, { invalidateAll: true });
-		return true;
-	}
-	return false;
+	// 检查是否未登录
+	return !page.data.user;
 }

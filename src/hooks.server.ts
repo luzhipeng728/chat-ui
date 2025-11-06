@@ -2,12 +2,7 @@ import { config, ready } from "$lib/server/config";
 import type { Handle, HandleServerError, ServerInit, HandleFetch } from "@sveltejs/kit";
 import { collections } from "$lib/server/database";
 import { base } from "$app/paths";
-import {
-	authenticateRequest,
-	loginEnabled,
-	refreshSessionCookie,
-	triggerOauthFlow,
-} from "$lib/server/auth";
+import { authenticateRequest, refreshSessionCookie } from "$lib/server/auth";
 import { ERROR_MESSAGES } from "$lib/stores/errors";
 import { addWeeks } from "date-fns";
 import { checkAndRunMigrations } from "$lib/migrations/migrations";
@@ -138,38 +133,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	event.locals.sessionId = auth.sessionId;
 
-	if (loginEnabled && !auth.user) {
-		if (config.AUTOMATIC_LOGIN === "true") {
-			// AUTOMATIC_LOGIN: always redirect to OAuth flow (unless already on login or healthcheck pages)
-			if (
-				!event.url.pathname.startsWith(`${base}/login`) &&
-				!event.url.pathname.startsWith(`${base}/healthcheck`)
-			) {
-				// To get the same CSRF token after callback
-				refreshSessionCookie(event.cookies, auth.secretSessionId);
-				return await triggerOauthFlow({
-					request: event.request,
-					url: event.url,
-					locals: event.locals,
-				});
-			}
-		} else {
-			// Redirect to OAuth flow unless on the authorized pages (home, shared conversation, login, healthcheck)
-			if (
-				event.url.pathname !== `${base}/` &&
-				event.url.pathname !== `${base}` &&
-				!event.url.pathname.startsWith(`${base}/login`) &&
-				!event.url.pathname.startsWith(`${base}/login/callback`) &&
-				!event.url.pathname.startsWith(`${base}/healthcheck`) &&
-				!event.url.pathname.startsWith(`${base}/r/`) &&
-				!event.url.pathname.startsWith(`${base}/conversation/`) &&
-				!event.url.pathname.startsWith(`${base}/api`)
-			) {
-				refreshSessionCookie(event.cookies, auth.secretSessionId);
-				return triggerOauthFlow({ request: event.request, url: event.url, locals: event.locals });
-			}
-		}
-	}
+	// 不强制跳转登录页,允许访客浏览
+	// 登录检查在发送消息时由前端处理
 
 	event.locals.user = auth.user || undefined;
 	event.locals.token = auth.token;
@@ -220,9 +185,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	if (
-		loginEnabled &&
 		!event.locals.user &&
 		!event.url.pathname.startsWith(`${base}/login`) &&
+		!event.url.pathname.startsWith(`${base}/register`) &&
 		!event.url.pathname.startsWith(`${base}/admin`) &&
 		!event.url.pathname.startsWith(`${base}/settings`) &&
 		!["GET", "OPTIONS", "HEAD"].includes(event.request.method)

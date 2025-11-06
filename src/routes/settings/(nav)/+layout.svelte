@@ -113,7 +113,7 @@
 				/>
 			</button>
 		{/if}
-		<h2 class=" left-0 right-0 mx-auto w-fit text-center text-xl font-bold md:hidden">Settings</h2>
+		<h2 class=" left-0 right-0 mx-auto w-fit text-center text-xl font-bold md:hidden">设置</h2>
 		<button
 			class="btn rounded-lg"
 			aria-label="Close settings"
@@ -136,7 +136,7 @@
 			<h3
 				class="px-3 pb-1 pt-2 text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-400 md:text-left"
 			>
-				Models
+				模型
 			</h3>
 
 			<!-- Filter input -->
@@ -144,7 +144,7 @@
 				<input
 					bind:value={modelFilter}
 					type="search"
-					placeholder="Search by name"
+					placeholder="按名称搜索"
 					aria-label="Search models by name or id"
 					class="w-full rounded-full border border-gray-300 bg-white px-4 py-1 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:ring-gray-700"
 				/>
@@ -193,7 +193,7 @@
 						<div
 							class="flex h-[21px] items-center rounded-md bg-black/90 px-2 text-[11px] font-semibold leading-none text-white dark:bg-white dark:text-black"
 						>
-							Active
+							当前
 						</div>
 					{/if}
 				</button>
@@ -209,7 +209,7 @@
 				aria-label="Configure application settings"
 			>
 				<IconGear class="mr-0.5 text-xxs" />
-				Application Settings
+				应用设置
 			</button>
 		</div>
 	{/if}

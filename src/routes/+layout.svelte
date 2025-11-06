@@ -175,10 +175,8 @@
 	);
 
 	// Show the welcome modal once on first app load
-	let showWelcome = $derived(
-		!$settings.welcomeModalSeen &&
-			!(page.data.shared === true && page.route.id?.startsWith("/conversation/"))
-	);
+	// 已禁用欢迎弹框
+	let showWelcome = $derived(false);
 </script>
 
 <svelte:head>

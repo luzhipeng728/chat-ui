@@ -40,19 +40,8 @@
 
 <div class="flex w-full flex-col gap-4">
 	<h2 class="text-center text-lg font-semibold text-gray-800 dark:text-gray-200 md:text-left">
-		Application Settings
+		应用设置
 	</h2>
-
-	{#if OPENAI_BASE_URL !== null}
-		<div
-			class="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-700 dark:border-gray-700 dark:bg-gray-700/80 dark:text-gray-300"
-		>
-			<span class="font-medium">API Base URL:</span>
-			<code class="ml-1 break-all font-mono text-[12px] text-gray-800 dark:text-gray-100"
-				>{OPENAI_BASE_URL}</code
-			>
-		</div>
-	{/if}
 	{#if !!publicConfig.PUBLIC_COMMIT_SHA}
 		<div
 			class="flex flex-col items-start justify-between text-xl font-semibold text-gray-800 dark:text-gray-200"
@@ -63,7 +52,7 @@
 				rel="noreferrer"
 				class="text-sm font-light text-gray-500 dark:text-gray-400"
 			>
-				Latest deployment <span class="gap-2 font-mono"
+				最新部署 <span class="gap-2 font-mono"
 					>{publicConfig.PUBLIC_COMMIT_SHA.slice(0, 7)}</span
 				>
 			</a>
@@ -74,7 +63,7 @@
 			<p
 				class="rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 dark:text-red-300"
 			>
-				Admin mode
+				管理员模式
 			</p>
 			<button
 				class="btn rounded-md text-xs"
@@ -86,18 +75,18 @@
 						refreshMessage = null;
 						const res = await client.models.refresh.post().then(handleResponse);
 						const delta = `+${res.added.length} −${res.removed.length} ~${res.changed.length}`;
-						refreshMessage = `Refreshed in ${res.durationMs} ms • ${delta} • total ${res.total}`;
+						refreshMessage = `已刷新 耗时 ${res.durationMs} ms • ${delta} • 总计 ${res.total}`;
 						await goto(page.url.pathname, { invalidateAll: true });
 					} catch (e) {
 						console.error(e);
-						$error = "Model refresh failed";
+						$error = "模型刷新失败";
 					} finally {
 						refreshing = false;
 					}
 				}}
 				disabled={refreshing}
 			>
-				{refreshing ? "Refreshing…" : "Refresh models"}
+				{refreshing ? "刷新中…" : "刷新模型"}
 			</button>
 			{#if refreshMessage}
 				<span class="text-xs text-gray-600 dark:text-gray-400">{refreshMessage}</span>
@@ -113,10 +102,10 @@
 					<div class="flex items-start justify-between py-3">
 						<div>
 							<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">
-								Share with model authors
+								与模型作者共享数据
 							</div>
 							<p class="text-[12px] text-gray-500 dark:text-gray-400">
-								Sharing your data helps improve open models over time.
+								共享您的数据有助于改进开放模型
 							</p>
 						</div>
 						<Switch
@@ -129,10 +118,10 @@
 				<div class="flex items-start justify-between py-3">
 					<div>
 						<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">
-							Disable streaming tokens
+							禁用流式响应
 						</div>
 						<p class="text-[12px] text-gray-500 dark:text-gray-400">
-							Show responses only when complete.
+							仅在响应完成时显示
 						</p>
 					</div>
 					<Switch name="disableStream" bind:checked={$settings.disableStream} />
@@ -141,10 +130,10 @@
 				<div class="flex items-start justify-between py-3">
 					<div>
 						<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">
-							Paste text directly
+							直接粘贴文本
 						</div>
 						<p class="text-[12px] text-gray-500 dark:text-gray-400">
-							Paste long text directly into chat instead of a file.
+							将长文本直接粘贴到聊天中而非作为文件
 						</p>
 					</div>
 					<Switch name="directPaste" bind:checked={$settings.directPaste} />
@@ -153,9 +142,9 @@
 				<!-- Theme selector -->
 				<div class="flex items-start justify-between py-3">
 					<div>
-						<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">Theme</div>
+						<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">主题</div>
 						<p class="text-[12px] text-gray-500 dark:text-gray-400">
-							Choose light, dark, or follow system.
+							选择浅色、深色或跟随系统
 						</p>
 					</div>
 					<div
@@ -171,7 +160,7 @@
 								themePref = "system";
 							}}
 						>
-							system
+							跟随系统
 						</button>
 						<button
 							class={"inline-flex items-center justify-center px-2.5 py-1 text-center text-xs " +
@@ -183,7 +172,7 @@
 								themePref = "light";
 							}}
 						>
-							light
+							浅色
 						</button>
 						<button
 							class={"inline-flex items-center justify-center px-2.5 py-1 text-center text-xs " +
@@ -195,7 +184,7 @@
 								themePref = "dark";
 							}}
 						>
-							dark
+							深色
 						</button>
 					</div>
 				</div>
@@ -233,7 +222,7 @@
 				onclick={async (e) => {
 					e.preventDefault();
 
-					confirm("Are you sure you want to delete all conversations?") &&
+					confirm("确定要删除所有对话吗?") &&
 						client.conversations
 							.delete()
 							.then(async () => {
@@ -246,8 +235,22 @@
 				}}
 				type="submit"
 				class="flex items-center underline decoration-red-200 underline-offset-2 hover:decoration-red-500 dark:decoration-red-900 dark:hover:decoration-red-700"
-				><CarbonTrashCan class="mr-2 inline text-sm text-red-500" />Delete all conversations</button
+				><CarbonTrashCan class="mr-2 inline text-sm text-red-500" />删除所有对话</button
 			>
 		</div>
+
+		<!-- 退出登录按钮 -->
+		{#if page.data.user}
+			<div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+				<form method="POST" action="{base}/logout">
+					<button
+						type="submit"
+						class="w-full rounded-md border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 px-4 py-2.5 font-medium text-gray-700 dark:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+					>
+						退出登录
+					</button>
+				</form>
+			</div>
+		{/if}
 	</div>
 </div>

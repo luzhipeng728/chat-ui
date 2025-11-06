@@ -1,9 +1,9 @@
 <script lang="ts" module>
 	export const titles: { [key: string]: string } = {
-		today: "Today",
-		week: "This week",
-		month: "This month",
-		older: "Older",
+		today: "今天",
+		week: "本周",
+		month: "本月",
+		older: "更早",
 	} as const;
 </script>
 
@@ -140,7 +140,7 @@
 		class="flex rounded-lg border bg-white px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 dark:bg-gray-700 sm:text-smd"
 		title="Ctrl/Cmd + Shift + O"
 	>
-		New Chat
+		新对话
 	</a>
 </div>
 
@@ -166,28 +166,37 @@
 <div
 	class="flex touch-none flex-col gap-1 rounded-r-xl border border-l-0 border-gray-100 p-3 text-sm dark:border-transparent md:mt-3 md:bg-gradient-to-l md:from-gray-50 md:dark:from-gray-800/30"
 >
-	{#if user?.username || user?.email}
-		<div
+	{#if user}
+		<a
+			href="{base}/settings/profile"
 			class="group flex items-center gap-1.5 rounded-lg pl-2.5 pr-2 hover:bg-gray-100 dark:hover:bg-gray-700"
 		>
 			<span
 				class="flex h-9 flex-none shrink items-center gap-1.5 truncate pr-2 text-gray-500 dark:text-gray-400"
-				>{user?.username || user?.email}</span
+				>{user?.nickname || user?.username}</span
 			>
 
-			<img
-				src="https://huggingface.co/api/users/{user.username}/avatar?redirect=true"
-				class="ml-auto size-4 rounded-full border bg-gray-500 dark:border-white/40"
-				alt=""
-			/>
-		</div>
+			{#if user.avatarUrl}
+				<img
+					src={user.avatarUrl}
+					class="ml-auto size-6 rounded-full border bg-gray-200 dark:border-white/40"
+					alt="Avatar"
+				/>
+			{:else}
+				<div
+					class="ml-auto flex size-6 items-center justify-center rounded-full bg-blue-500 text-[10px] font-medium text-white"
+				>
+					{(user?.nickname || user?.username || '?')[0].toUpperCase()}
+				</div>
+			{/if}
+		</a>
 	{/if}
 	<a
 		href="{base}/models"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 		onclick={handleNavItemClick}
 	>
-		Models
+		模型
 		<span
 			class="ml-auto rounded-md bg-gray-500/5 px-1.5 py-0.5 text-xs text-gray-400 dark:bg-gray-500/20 dark:text-gray-400"
 			>{nModels}</span
@@ -200,7 +209,7 @@
 			class="flex h-9 flex-none flex-grow items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 			onclick={handleNavItemClick}
 		>
-			Settings
+			设置
 		</a>
 		<button
 			onclick={() => {
@@ -218,4 +227,5 @@
 			{/if}
 		</button>
 	</span>
+
 </div>

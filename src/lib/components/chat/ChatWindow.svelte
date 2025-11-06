@@ -33,6 +33,7 @@
 
 	import { isVirtualKeyboard } from "$lib/utils/isVirtualKeyboard";
 	import { requireAuthUser } from "$lib/utils/auth";
+	import LoginModal from "$lib/components/LoginModal.svelte";
 
 	interface Props {
 		messages?: Message[];
@@ -71,11 +72,19 @@
 	let isReadOnly = $derived(!models.some((model) => model.id === currentModel.id));
 
 	let shareModalOpen = $state(false);
+	let loginModalOpen = $state(false);
 	let editMsdgId: Message["id"] | null = $state(null);
 	let pastedLongContent = $state(false);
 
 	const handleSubmit = () => {
-		if (requireAuthUser() || loading || !draft) return;
+		if (loading || !draft) return;
+
+		// 检查是否需要登录
+		if (requireAuthUser()) {
+			loginModalOpen = true;
+			return;
+		}
+
 		onmessage?.(draft);
 		draft = "";
 	};
@@ -480,10 +489,10 @@
 						class:paste-glow={pastedLongContent}
 					>
 						{#if lastIsError}
-							<ChatInput value="Sorry, something went wrong. Please try again." disabled={true} />
+							<ChatInput value="抱歉,出现了错误,请重试" disabled={true} />
 						{:else}
 							<ChatInput
-								placeholder={isReadOnly ? "This conversation is read-only." : "Ask anything"}
+								placeholder={isReadOnly ? "此对话为只读模式" : "输入消息..."}
 								{loading}
 								bind:value={draft}
 								bind:files
@@ -553,7 +562,7 @@
 								<IconOmni />
 								{currentModel.displayName}
 							{:else}
-								Model: {currentModel.displayName}
+								模型: {currentModel.displayName}
 							{/if}
 							<CarbonCaretDown class="-ml-0.5 text-xxs" />
 						</a>
@@ -567,7 +576,7 @@
 								{streamingRouterMetadata.route}
 							</span>
 
-							<span class="text-gray-500">with</span>
+							<span class="text-gray-500">使用</span>
 
 							<span class="router-badge-text">
 								{streamingRouterModelName}
@@ -578,7 +587,7 @@
 							class="loading-dots relative inline-flex items-center text-gray-400 dark:text-gray-400"
 							aria-label="Routing…"
 						>
-							<IconOmni classNames="text-xs animate-pulse mr-1" /> Routing
+							<IconOmni classNames="text-xs animate-pulse mr-1" /> 路由中
 						</div>
 					{/if}
 				{:else}
@@ -587,7 +596,7 @@
 					</span>
 				{/if}
 				{#if !messages.length && !loading}
-					<span>Generated content may be inaccurate or false.</span>
+					<span>生成的内容可能不准确或错误</span>
 				{/if}
 			</div>
 		</div>
@@ -673,3 +682,10 @@
 		}
 	}
 </style>
+
+<LoginModal
+	bind:isOpen={loginModalOpen}
+	onClose={() => {
+		loginModalOpen = false;
+	}}
+/>

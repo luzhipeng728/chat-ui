@@ -76,7 +76,7 @@
 			}}
 		>
 			<CarbonChat class="mr-1.5 text-sm" />
-			New chat
+			新对话
 		</button>
 
 		{#if model.modelUrl}
@@ -155,7 +155,7 @@
 			</p>
 		{/if}
 		<div class="flex w-full flex-row content-between">
-			<h3 class="mb-1 text-[15px] font-semibold text-gray-800 dark:text-gray-200">System Prompt</h3>
+			<h3 class="mb-1 text-[15px] font-semibold text-gray-800 dark:text-gray-200">系统提示词</h3>
 			{#if hasCustomPreprompt}
 				<button
 					class="ml-auto text-xs underline decoration-gray-300 hover:decoration-gray-700 dark:decoration-gray-700 dark:hover:decoration-gray-400"
@@ -164,7 +164,7 @@
 						$settings.customPrompts[page.params.model] = model.preprompt;
 					}}
 				>
-					Reset
+					重置
 				</button>
 			{/if}
 		</div>
@@ -183,10 +183,10 @@
 				<div class="flex items-start justify-between py-3">
 					<div>
 						<div class="text-[13px] font-medium text-gray-800 dark:text-gray-200">
-							Multimodal support (image inputs)
+							多模态支持(图片输入)
 						</div>
 						<p class="text-[12px] text-gray-500 dark:text-gray-400">
-							Enable image uploads and send images to this model.
+							启用图片上传并将图片发送到此模型
 						</p>
 					</div>
 					<Switch
